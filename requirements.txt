@@ -11,7 +11,7 @@ python_dotenv
 openai
 streamlit
 langchain-core
---langchain-retrievers
+#langchain-retrievers
 langchain-embeddings
 langchain-vectorstores
 pickle
