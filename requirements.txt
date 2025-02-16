@@ -13,12 +13,11 @@ streamlit
 langchain-core
 #langchain-retrievers
 #langchain-embeddings
-langchain-vectorstores
+#langchain-vectorstores
 pickle
 streamlit-mic-recorder
 typing-extensions
 uuid
-langchain-vectorstores
-langchain-storage
-langchain-schema
+#langchain-storage
+#langchain-schema
 opencv-python
