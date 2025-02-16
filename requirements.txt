@@ -12,7 +12,7 @@ openai
 streamlit
 langchain-core
 #langchain-retrievers
-langchain-embeddings
+#langchain-embeddings
 langchain-vectorstores
 pickle
 streamlit-mic-recorder
