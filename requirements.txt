@@ -14,7 +14,7 @@ langchain-core
 #langchain-retrievers
 #langchain-embeddings
 #langchain-vectorstores
-pickle
+#pickle
 streamlit-mic-recorder
 typing-extensions
 uuid
