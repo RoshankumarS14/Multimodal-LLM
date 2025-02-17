@@ -75,7 +75,7 @@ with st.sidebar:
     st.title('🤖💬 OpenAI Chatbot')
     if 'OPENAI_API_KEY' in os.environ:
         st.success('API key already provided!', icon='✅')
-        openai.api_key = os.getenv['OPENAI_API_KEY']
+        openai.api_key = os.getenv('OPENAI_API_KEY')
     else:
         openai.api_key = st.text_input('Enter OpenAI API token:', type='password')
         if not (openai.api_key.startswith('sk-') and len(openai.api_key)==51):
@@ -104,66 +104,6 @@ class CompositeElement:
 class CompositeMetadata:
     def __init__(self, elements):
         self.orig_elements = elements
-
-# if "images" not in st.session_state:
-#     # Extract and encode frames
-#     frames = extract_frames("Data/videoplayback.mp4", num_frames=20)
-#     image_elements = [ImageElement(encode_image(frame)) for frame in frames]
-#     composite_chunk = CompositeElement(image_elements)
-
-#     # Now, applying their function
-#     st.session_state.images = get_images_base64([composite_chunk])
-#     print("images ready")
-
-# if "image_summaries" not in st.session_state:
-#     st.session_state.image_summaries = get_image_summary(st.session_state.images)
-#     print("image summaries ready")
-
-# if "retriever" not in st.session_state or st.session_state.retriever is None:
-
-# def load_retriever_and_chain(pickle):
-
-#     # Load vectorstore from disk
-#     vectorstore = Chroma(
-#         collection_name="multi_modal_rag",
-#         embedding_function=OpenAIEmbeddings(),
-#         persist_directory=f"./Vector Database/{pickle[:-4]}"
-#     )
-
-#     # Load stored docstore and data
-#     with open("./Vector Database/{pickle}", "rb") as f:
-#         data = pickle.load(f)
-
-#     store = data["docstore"]
-
-#     # Recreate the retriever
-#     st.session_state.retriever = MultiVectorRetriever(vectorstore=vectorstore, docstore=store, id_key="doc_id")
-#     print("retriever ready")
-
-# # if "chain" not in st.session_state:
-#     st.session_state.chain = (
-#         {
-#             "context": st.session_state.retriever | RunnableLambda(parse_docs),
-#             "question": RunnablePassthrough(),
-#         }
-#         | RunnableLambda(build_prompt)
-#         | ChatOpenAI(model="gpt-4o-mini")
-#         | StrOutputParser()
-#     )
-#     print("chain ready")
-
-# # if "chain_with_resources" not in st.session_state:
-#     st.session_state.chain_with_resources = {
-#         "context": st.session_state.retriever | RunnableLambda(parse_docs),
-#         "question": RunnablePassthrough(),
-#     } | RunnablePassthrough().assign(
-#         response=(
-#             RunnableLambda(build_prompt)
-#             | ChatOpenAI(model="gpt-4o-mini")
-#             | StrOutputParser()
-#         )
-#     )
-#     print("chain with resources ready")
 
 if "button_pressed" not in st.session_state:
     st.session_state.button_pressed=False
