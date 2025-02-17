@@ -44,6 +44,7 @@ def load_retriever_and_chain(case):
         data = pickle.load(f)
 
     store = data["docstore"]
+    st.session_state.video_summary = data["video_summary"]
 
     # Recreate the retriever
     st.session_state.retriever = MultiVectorRetriever(vectorstore=vectorstore, docstore=store, id_key="doc_id")
