@@ -3,60 +3,57 @@ from langchain_core.messages import SystemMessage, HumanMessage
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langchain_openai import ChatOpenAI
-import base64
-from base64 import b64decode
+from typing import Dict, List
 
 
-# def parse_docs(docs):
-#     """Split base64-encoded images and texts"""
-#     b64 = []
-#     text = []
-#     for doc in docs:
-#         try:
-#             b64decode(doc)
-#             b64.append(doc)
-#         except Exception as e:
-#             text.append(doc)
-#     return {"images": b64, "texts": text}
+def parse_docs(retriever_output) -> Dict[str, List]:    
 
-# import base64
+    # Initialize lists to store sorted summaries and raw data
+    sorted_texts = []
+    sorted_tables = []
+    sorted_images = []
 
-def parse_docs(docs):
-    """Splits base64-encoded images and text, and sorts text summaries by frame_id."""
-    b64 = []
-    text_with_metadata = []
+    # Iterate through the retriever output
+    for doc in retriever_output:
 
-    for doc in docs:
-        try:
-            # Attempt to decode Base64 to check if it's an image
-            base64.b64decode(doc)
-            b64.append(doc)  # Store as an image
-        except Exception:
-            # If not Base64, treat as text and store metadata for sorting
-            text_with_metadata.append((doc.metadata.get("frame_id", float("inf")), doc))
+            # Organize the data based on the type
+            if str(doc)[0] == "/":
+                sorted_images.append(doc)
+            elif str(doc)[0] == "{":
+                sorted_tables.append(doc)
+            else:
+                sorted_texts.append(str(doc))
 
-    # Sort text summaries by frame_id to preserve order
-    text_with_metadata.sort(key=lambda x: x[0])  # Sort based on frame_id
+    # Return the organized data
+    return {
+        "texts": sorted_texts,
+        "tables": sorted_tables,
+        "images": sorted_images,
+    }
 
-    # Extract only sorted text contents
-    sorted_texts = [content for _, content in text_with_metadata]
-
-    return {"images": b64, "texts": sorted_texts}
-
-def build_prompt(kwargs):
+def build_prompt(kwargs,video_summary):
 
     docs_by_type = kwargs["context"]
     user_question = kwargs["question"]
-
+    
+    # Construct context for text summaries
     context_text = ""
     if len(docs_by_type["texts"]) > 0:
-        for text_element in docs_by_type["texts"]:
-            context_text += text_element.text
+        context_text = "\n".join(docs_by_type["texts"])
 
-    # construct prompt with context (including images)
+    # Construct context for table summaries
+    context_tables = ""
+    if len(docs_by_type["tables"]) > 0:
+        context_tables = "\n".join(docs_by_type["tables"])
+
+    # Construct prompt with context (text, tables, and image summaries)
     prompt_template = f"""
-    Based on analyzing frames of the video, Answer the question
-    Context: {context_text}
+    Answer the question based only on the following context, which can include text, tables, and image summaries.
+    Based on analyzing the provided context, answer the question.
+
+    Text Context: {context_text}
+    Table Context: {context_tables}
+    Video Context" {video_summary}
     Question: {user_question}
     """
 
