@@ -26,6 +26,9 @@ if "pickles" not in st.session_state:
     # Get all .pkl files in the folder
     st.session_state.pickles = [f[:-4] for f in os.listdir(folder_path) if f.endswith('.pkl')]
 
+def build_prompt_with_param(custom_param):
+    return RunnableLambda(lambda data: build_prompt(data, custom_param))
+    
 def load_retriever_and_chain(case):
     print("Button clicked")
     print("Pickle:",case)
@@ -64,7 +67,7 @@ def load_retriever_and_chain(case):
         "question": RunnablePassthrough(),
     } | RunnablePassthrough().assign(
         response=(
-            RunnableLambda(build_prompt)
+            build_prompt_with_param(st.session_state.video_summary)
             | ChatOpenAI(model="gpt-4o-mini")
             | StrOutputParser()
         )
