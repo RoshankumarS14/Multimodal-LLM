@@ -26,9 +26,6 @@ if "pickles" not in st.session_state:
     # Get all .pkl files in the folder
     st.session_state.pickles = [f[:-4] for f in os.listdir(folder_path) if f.endswith('.pkl')]
 
-def build_prompt_with_param(custom_param):
-    return RunnableLambda(lambda data: build_prompt(data, custom_param))
-
 def load_retriever_and_chain(case):
     print("Button clicked")
     print("Pickle:",case)
@@ -44,10 +41,9 @@ def load_retriever_and_chain(case):
         data = pickle.load(f)
 
     store = data["docstore"]
-    st.session_state.video_summary = data["video_summary"]
 
     # Recreate the retriever
-    st.session_state.retriever = MultiVectorRetriever(vectorstore=vectorstore, docstore=store, id_key="id")
+    st.session_state.retriever = MultiVectorRetriever(vectorstore=vectorstore, docstore=store, id_key="doc_id")
     print("retriever ready")
 
 # if "chain" not in st.session_state:
@@ -68,7 +64,7 @@ def load_retriever_and_chain(case):
         "question": RunnablePassthrough(),
     } | RunnablePassthrough().assign(
         response=(
-            build_prompt_with_param(st.session_state.video_summary)
+            RunnableLambda(build_prompt)
             | ChatOpenAI(model="gpt-4o-mini")
             | StrOutputParser()
         )
@@ -77,9 +73,9 @@ def load_retriever_and_chain(case):
 
 with st.sidebar:
     st.title('🤖💬 OpenAI Chatbot')
-    if 'OPENAI_API_KEY' in st.secrets:
+    if 'OPENAI_API_KEY' in os.environ:
         st.success('API key already provided!', icon='✅')
-        openai.api_key = st.secrets['OPENAI_API_KEY']
+        openai.api_key = os.getenv('OPENAI_API_KEY')
     else:
         openai.api_key = st.text_input('Enter OpenAI API token:', type='password')
         if not (openai.api_key.startswith('sk-') and len(openai.api_key)==51):
@@ -175,8 +171,8 @@ if prompt := st.chat_input("What is up?"):
         message_placeholder = st.empty()
         full_response = ""
         print("Prompt entered:",prompt)
-        # output = st.session_state.chain_with_resources.invoke(prompt)
         output = st.session_state.chain_with_resources.invoke(prompt)
+        print(output)
         st.session_state.button_pressed = False
         for response in output["response"]:
             full_response += response
