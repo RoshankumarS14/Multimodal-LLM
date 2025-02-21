@@ -16,7 +16,6 @@ import pickle
 from Video_Processing import extract_frames, encode_image, get_images_base64
 from Embedding import get_image_summary, get_embedding
 from LLM import parse_docs, build_prompt
-from streamlit_mic_recorder import mic_recorder
 
 
 if "pickles" not in st.session_state:
@@ -76,9 +75,10 @@ def load_retriever_and_chain(case):
     print("chain with resources ready")
 
 with st.sidebar:
-    st.title('🤖💬 Claim Analyzer')
-    openai.api_key = os.getenv('OPENAI_API_KEY')
+    st.title('🤖💬 OpenAI Chatbot')
+    openai.api_key = os.getenv("OPENAI_API_KEY")
     st.success('API key already provided!', icon='✅')
+     
     case = st.selectbox("Select the case to analyze:",st.session_state.pickles)
     if st.button("load"):
         load_retriever_and_chain(case+".pkl")
@@ -114,51 +114,6 @@ if "response" not in st.session_state:
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
-
-# Add a microphone button for voice input
-audio = mic_recorder(
-    start_prompt="🎤",
-    stop_prompt="⏹️ Stop Recording",
-    just_once=True,  # Record only once per click
-    use_container_width=False,
-    format="wav",  # Audio format
-    key="mic_recorder",
-)
-
-# Handle audio input
-if audio:
-
-    # Save the recorded audio to a file (optional)
-    with open("temp_audio.wav", "wb") as f:
-        f.write(audio["bytes"])
-
-    # Transcribe the audio to text using a speech recognition library
-    try:
-        import speech_recognition as sr
-        recognizer = sr.Recognizer()
-        with sr.AudioFile("temp_audio.wav") as source:
-            audio_data = recognizer.record(source)
-        prompt = recognizer.recognize_google(audio_data)  # Use Google Speech Recognition
-    except Exception as e:
-        st.error(f"Error transcribing audio: {e}")
-        prompt = None
-
-    # If transcription is successful, process the prompt
-    if prompt:
-        st.session_state.messages.append({"role": "user", "content": prompt})
-        with st.chat_message("user"):
-            st.markdown(prompt)
-        with st.chat_message("assistant"):
-            message_placeholder = st.empty()
-            full_response = ""
-            output = st.session_state.chain_with_resources.invoke(prompt)
-            st.session_state.button_pressed = False
-            for response in output["response"]:
-                full_response += response
-                message_placeholder.markdown(full_response + "▌")
-            message_placeholder.markdown(full_response)
-            st.session_state.response = output
-            st.session_state.response_returned = True
 
 if prompt := st.chat_input("What is up?"):
     st.session_state.messages.append({"role": "user", "content": prompt})
