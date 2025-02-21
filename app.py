@@ -28,7 +28,11 @@ if "pickles" not in st.session_state:
 
 def build_prompt_with_param(custom_param):
     return RunnableLambda(lambda data: build_prompt(data, custom_param))
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> f617e370e6eb8f682c3598f9e0d0409fd13adc6b
 def load_retriever_and_chain(case):
     print("Button clicked")
     print("Pickle:",case)
