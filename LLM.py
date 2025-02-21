@@ -23,7 +23,7 @@ def parse_docs(retriever_output) -> Dict[str, List]:
                 sorted_tables.append(doc)
             else:
                 sorted_texts.append(str(doc))
-
+    print("Texts",sorted_texts)
     # Return the organized data
     return {
         "texts": sorted_texts,
@@ -55,8 +55,10 @@ def build_prompt(kwargs,video_summary):
     Table Context: {context_tables}
     Video Context" {video_summary}
     Question: {user_question}
-    """
 
+    Also including some of the frames of the video for your reference:
+    """
+    print("Prompt Template",prompt_template)
     prompt_content = [{"type": "text", "text": prompt_template}]
 
     if len(docs_by_type["images"]) > 0:

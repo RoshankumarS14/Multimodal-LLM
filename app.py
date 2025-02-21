@@ -26,6 +26,9 @@ if "pickles" not in st.session_state:
     # Get all .pkl files in the folder
     st.session_state.pickles = [f[:-4] for f in os.listdir(folder_path) if f.endswith('.pkl')]
 
+def build_prompt_with_param(custom_param):
+    return RunnableLambda(lambda data: build_prompt(data, custom_param))
+
 def load_retriever_and_chain(case):
     print("Button clicked")
     print("Pickle:",case)
@@ -41,9 +44,10 @@ def load_retriever_and_chain(case):
         data = pickle.load(f)
 
     store = data["docstore"]
+    st.session_state.video_summary = data["video_summary"]
 
     # Recreate the retriever
-    st.session_state.retriever = MultiVectorRetriever(vectorstore=vectorstore, docstore=store, id_key="doc_id")
+    st.session_state.retriever = MultiVectorRetriever(vectorstore=vectorstore, docstore=store, id_key="id")
     print("retriever ready")
 
 # if "chain" not in st.session_state:
@@ -64,7 +68,7 @@ def load_retriever_and_chain(case):
         "question": RunnablePassthrough(),
     } | RunnablePassthrough().assign(
         response=(
-            RunnableLambda(build_prompt)
+            build_prompt_with_param(st.session_state.video_summary)
             | ChatOpenAI(model="gpt-4o-mini")
             | StrOutputParser()
         )
@@ -72,16 +76,9 @@ def load_retriever_and_chain(case):
     print("chain with resources ready")
 
 with st.sidebar:
-    st.title('🤖💬 OpenAI Chatbot')
-    if 'OPENAI_API_KEY' in os.environ:
-        st.success('API key already provided!', icon='✅')
-        openai.api_key = os.getenv('OPENAI_API_KEY')
-    else:
-        openai.api_key = st.text_input('Enter OpenAI API token:', type='password')
-        if not (openai.api_key.startswith('sk-') and len(openai.api_key)==51):
-            st.warning('Please enter your credentials!', icon='⚠️')
-        else:
-            st.success('Proceed to entering your prompt message!', icon='👉')
+    st.title('🤖💬 Claim Analyzer')
+    openai.api_key = os.getenv('OPENAI_API_KEY')
+    st.success('API key already provided!', icon='✅')
     case = st.selectbox("Select the case to analyze:",st.session_state.pickles)
     if st.button("load"):
         load_retriever_and_chain(case+".pkl")
@@ -171,13 +168,13 @@ if prompt := st.chat_input("What is up?"):
         message_placeholder = st.empty()
         full_response = ""
         print("Prompt entered:",prompt)
+        # output = st.session_state.chain_with_resources.invoke(prompt)
         output = st.session_state.chain_with_resources.invoke(prompt)
-        print(output)
         st.session_state.button_pressed = False
         for response in output["response"]:
             full_response += response
             message_placeholder.markdown(full_response + "▌")
-        message_placeholder.markdown(full_response)
+        message_placeholder.markdown(full_response.replace("$","\$"))
         st.session_state.response = output
         st.session_state.response_returned = True
         # if st.button("Get clips"):
