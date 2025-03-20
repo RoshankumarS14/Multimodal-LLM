@@ -1,0 +1,8 @@
+Analyze the statement of the claimant mentioned in his claimant report and compare it with the video summary and tell me if there are any discrepancy between both
+Analyze the statement of the claimant mentioned in his claimant report and compare it with the report mentioned in the police report and tell me if there are any discrepancy between both
+Compare the dollars mentioned by the claimant in his claimant report with the video summary and tell me the prices are fairly requested or over exaggerated ?
+Compare the dollars mentioned by the claimant in his claimant report with actual prices and tell me if it is a fair claim
+Give me detailed analysis of dollars mentioned by the claimant in his claimant report and comparing it with video summary. Think logically based on the sustained damages if the money claimed is fair
+analyse the claimant report and tell me if its a fraudulent claim
+-----------------------------------------------------------
+By analyzing the video, do you think what the defense attorney is saying in his report is true against the doctor in his medical report ?

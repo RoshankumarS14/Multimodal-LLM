@@ -39,7 +39,9 @@ def build_prompt(kwargs,video_summary):
     # Construct context for text summaries
     context_text = ""
     if len(docs_by_type["texts"]) > 0:
-        context_text = "\n".join(docs_by_type["texts"])
+        for i in docs_by_type["texts"]:
+            if i.split(" ")[0].lower() in user_question.lower().split(" "):
+                context_text += i
 
     # Construct context for table summaries
     context_tables = ""
