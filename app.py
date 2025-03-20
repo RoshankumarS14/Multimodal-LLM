@@ -78,7 +78,7 @@ def load_retriever_and_chain(case):
 with st.sidebar:
     st.title('🤖💬 Claims AI Assisstant')
         
-    openai.api_key = st.secrets['OPENAI_API_KEY']
+    openai.api_key = os.getenv('OPENAI_API_KEY')
     st.success('API key already provided!', icon='✅')   
 
     case = st.selectbox("Select the case to analyze:",st.session_state.pickles)
