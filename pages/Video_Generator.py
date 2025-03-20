@@ -11,8 +11,13 @@ for message in st.session_state.messages:
         st.markdown(message["content"])
 
 with st.sidebar:
+<<<<<<< HEAD
     st.title('🤖🎥 Marketing AI Assistant')
     customer = st.selectbox("Select the customer:",["Meghan","Christina","Avinash"])
+=======
+    st.title('🤖🎥 Hyper-Personalized Video Generator')
+    customer = st.selectbox("Select the customer:",["Avinash","Meghan","Christina"])
+>>>>>>> e8c77b3265e6f1b27ef89c4582b4451807aed713
     if st.button("Select"):
         st.success('Customer: '+customer+' selected!', icon='✅')
         st.session_state.customer = customer
@@ -36,4 +41,8 @@ if prompt := st.chat_input("What is up?"):
         if "video" in output:
             st.video("Data/Renewal/output3.mp4")
         st.session_state.response = response
+<<<<<<< HEAD
     st.session_state.messages.append({"role": "assistant", "content":output })
+=======
+    st.session_state.messages.append({"role": "assistant", "content":output })
+>>>>>>> e8c77b3265e6f1b27ef89c4582b4451807aed713

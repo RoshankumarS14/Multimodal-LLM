@@ -16,7 +16,6 @@ import pickle
 from Video_Processing import extract_frames, encode_image, get_images_base64
 from Embedding import get_image_summary, get_embedding
 from LLM import parse_docs, build_prompt
-from streamlit_mic_recorder import mic_recorder
 
 
 if "pickles" not in st.session_state:
@@ -76,10 +75,17 @@ def load_retriever_and_chain(case):
     print("chain with resources ready")
 
 with st.sidebar:
+<<<<<<< HEAD
     st.title('🤖💬 Claims AI Assisstant')
     st.success('API key already provided!', icon='✅')
     openai.api_key = os.getenv('OPENAI_API_KEY')
     st.success('Proceed to entering your prompt message!', icon='👉')
+=======
+    st.title('🤖💬 OpenAI Chatbot')
+    openai.api_key = os.getenv("OPENAI_API_KEY")
+    st.success('API key already provided!', icon='✅')
+     
+>>>>>>> e8c77b3265e6f1b27ef89c4582b4451807aed713
     case = st.selectbox("Select the case to analyze:",st.session_state.pickles)
     if st.button("load"):
         load_retriever_and_chain(case+".pkl")
